@@ -21,7 +21,7 @@ class OnlyOneViewModel(private val repository: OnlyOneRepository) : BaseViewMode
 
             list.addAll(result)
 
-            data.value = result
+            data.postValue(result)
         })
     }
 

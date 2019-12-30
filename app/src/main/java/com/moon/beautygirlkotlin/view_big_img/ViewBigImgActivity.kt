@@ -13,7 +13,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.moon.beautygirlkotlin.BeautyGirlKotlinApp
 import com.moon.beautygirlkotlin.R
 import com.moon.beautygirlkotlin.base.BaseActivity
-import com.moon.beautygirlkotlin.livdedatabus.LiveDataBus
 import com.moon.beautygirlkotlin.livdedatabus.LiveDataBusKt
 import com.moon.beautygirlkotlin.room.BeautyGirlDatabase
 import com.moon.beautygirlkotlin.room.FavoriteBean
@@ -106,20 +105,14 @@ class ViewBigImgActivity : BaseActivity(), View.OnClickListener, View.OnLongClic
     }
 
     private fun showDialog() {
-        val dialog = BottomSheetDialog(this@ViewBigImgActivity)
-        val dialogView = LayoutInflater.from(this@ViewBigImgActivity)
-                .inflate(R.layout.dialog_bottom, null)
-        val tvTakePhoto = dialogView.findViewById(R.id.tv_save_img) as Button
-        val tvCancel = dialogView.findViewById(R.id.tv_cancel) as Button
-
-        tvTakePhoto.setOnClickListener {
-
-            dialog.dismiss()
+        BottomSheetDialog(this@ViewBigImgActivity).apply {
+            setContentView(LayoutInflater.from(this@ViewBigImgActivity)
+                    .inflate(R.layout.dialog_bottom, null).apply {
+                        (findViewById(R.id.tv_save_img) as Button).setOnClickListener { dismiss() }
+                        (findViewById(R.id.tv_cancel) as Button).setOnClickListener { dismiss() }
+                    })
+            show()
         }
-
-        tvCancel.setOnClickListener { dialog.dismiss() }
-        dialog.setContentView(dialogView)
-        dialog.show()
     }
 
     override fun onClick(v: View?) {
@@ -136,7 +129,7 @@ class ViewBigImgActivity : BaseActivity(), View.OnClickListener, View.OnLongClic
                     } ?: let {
                         withContext(Dispatchers.IO) {
                             db.favouriteDao().insertFavourite(
-                                    FavoriteBean(title = title,url = url,createTime = System.currentTimeMillis()))
+                                    FavoriteBean(title = title, url = url, createTime = System.currentTimeMillis()))
                         }.let {
                             SnackbarUtil.showMessage(v, getString(R.string.collect_success))
 
@@ -157,7 +150,7 @@ class ViewBigImgActivity : BaseActivity(), View.OnClickListener, View.OnLongClic
     companion object {
 
         fun startViewBigImaActivity(context: Context, url: String?, title: String?, showCollectIcon: Boolean): Unit {
-            context.startActivity(with(Intent(context, ViewBigImgActivity::class.java)){
+            context.startActivity(with(Intent(context, ViewBigImgActivity::class.java)) {
                 putExtra("url", url)
                 putExtra("title", title)
                 putExtra("showCollectIcon", showCollectIcon)
